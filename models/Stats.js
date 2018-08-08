@@ -7,7 +7,7 @@ var MinuteSchema = mongoose.Schema({
   low: Number,
   volume: Number,
   data_timestamp:Date
-},{timestamps:true});
+});
 var StatSchema = mongoose.Schema(
   {
     hour: Number,
@@ -37,7 +37,6 @@ var StatSchema = mongoose.Schema(
       default: 0
     },
     all_data: [MinuteSchema]
-  },
-  { timestamps: true }
+  }
 );
 module.exports = { StatSchema };
