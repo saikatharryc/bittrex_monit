@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
 var MinuteSchema = mongoose.Schema({
-  minute: Number,
   open: Number,
   close: Number,
   high: Number,
   low: Number,
-  volume: Number
-});
+  volume: Number,
+  data_timestamp:Date
+},{timestamps:true});
 var StatSchema = mongoose.Schema(
   {
     hour: Number,
@@ -27,6 +27,10 @@ var StatSchema = mongoose.Schema(
     low: {
       type: Number,
       default: 0
+    },
+    total_volume:{
+        type: Number,
+        default: 0
     },
     count: {
       type: Number,
