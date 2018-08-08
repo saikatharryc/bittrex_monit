@@ -5,8 +5,7 @@ const Stats = mongoose.model("Stats");
 const cron = require("node-cron");
 const uriFetch_markets = "https://bittrex.com/api/v1.1/public/getmarkets";
 const uri = "https://bittrex.com/Api/v2.0/pub/market/GetLatestTick";
-const curntDate = new Date();
-const hour = curntDate.getHours();
+
 
 const market_options = {
   uri: uriFetch_markets,
@@ -15,7 +14,7 @@ const market_options = {
 };
 function save_it(formatted_data) {
   return Stats.update(
-    { marketName: formatted_data.marketName, hour: hour },
+    { marketName: formatted_data.marketName, hour: new Date().getHours() },
     {
       $inc: {
         count: 1,
@@ -48,7 +47,7 @@ function save_it(formatted_data) {
       if (data.nModified == 0) {
         try {
           return Stats.insertMany({
-            hour: hour,
+            hour: new Date().getHours(),
             marketName: formatted_data.marketName,
             open: formatted_data.result[0].O,
             close: formatted_data.result[0].C,
@@ -102,7 +101,7 @@ function process_it() {
               };
               Stats.findOne({
                 marketName: tick_formatted.marketName,
-                hour: hour,
+                hour: new Date().getHours(),
                 "all_data.data_timestamp": tick_formatted.result[0].T
               })
                 .select({ "all_data.$": 1 })
