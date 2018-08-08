@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mongoose": "^5.2.7"
+    "mongoose": "^5.2.7",
+    "nodemailer": "^4.6.7",
+    "request-promise": "^4.2.2"
   }
 }
