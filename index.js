@@ -1,19 +1,24 @@
+const config = require("./config/config");
 const mongoose = require("./db_connect");
 require("./models/index");
 var rp = require("request-promise");
 const Stats = mongoose.model("Stats");
 const cron = require("node-cron");
-const sendMail = require('./send_mail');
-
-const uriFetch_markets = "https://bittrex.com/api/v1.1/public/getmarkets";
-const uri = "https://bittrex.com/Api/v2.0/pub/market/GetLatestTick";
+const sendMail = require("./send_mail");
 
 const market_options = {
-  uri: uriFetch_markets,
+  uri: config.req_uri.market,
   method: "GET",
   json: true
 };
 
+/**
+ * Save data of Every minute from latesttick in DB.
+ *
+ * @param {Object} formatted_data
+ * @param {Boolean} full
+ * @returns Promise
+ */
 function save_it(formatted_data, full) {
   let update_query = {
     $inc: {
@@ -30,6 +35,9 @@ function save_it(formatted_data, full) {
       }
     }
   };
+  //Lets not Update the minutes high,low, close,
+  // and total volume when same data getting after a minute also.
+  // Just insert the data into an array and increasing the count.
   if (full) {
     Object.assign(update_query, {
       $max: {
@@ -53,10 +61,12 @@ function save_it(formatted_data, full) {
   )
     .exec()
     .then(data => {
+      //if nothing gets updated, insert doc
       if (data.nModified == 0) {
         try {
           return Stats.insertMany({
             hour: new Date().getHours(),
+            expireAt: new Date().setDate(new Date().getDate() + 1), //Becaus i want to delete this next day
             marketName: formatted_data.marketName,
             open: formatted_data.result[0].O,
             close: formatted_data.result[0].C,
@@ -83,7 +93,11 @@ function save_it(formatted_data, full) {
       }
     });
 }
-
+/**
+ * Calls Market and then for each market it calls for latest tick.
+ *  and then save the data afterwards.
+ * @returns Promise
+ */
 function process_it() {
   let promiseArr = [];
   return new Promise((resolve, reject) => {
@@ -99,7 +113,7 @@ function process_it() {
 
         data.result.forEach(i => {
           rp(
-            `${uri}?marketName=${
+            `${config.req_uri.latest_tick}?marketName=${
               i.MarketName
             }&tickInterval=oneMin&_=${Date.now()}`
           )
@@ -145,7 +159,9 @@ function process_it() {
       });
   });
 }
-
+/**
+ * Run This function Every minute
+ */
 cron.schedule("* * * * *", () => {
   process_it()
     .then(data => {
@@ -178,29 +194,31 @@ cron.schedule("* * * * *", () => {
               i.all_data.length == 60
             ) {
               data_arr.push({
-                market: no_markets,
+                market: i.marketName,
                 tickValue: i.all_data.length,
-                close: stat_data.close,
-                open: stat_data.open,
-                low: stat_data.low,
-                high: stat_data.high,
-                total_volume: stat_data.total_volume
+                close: i.close,
+                open: i.open,
+                low: i.low,
+                high: i.high,
+                total_volume: i.total_volume
               });
 
-              if(no_markets ==data_arr.length){
-                return sendMail.mailit(['saikat@kiot.io'],{
-                  subject:`Summry after ${i.all_data.length} tick`,
-                  text:JSON.stringify(data_arr),
-                  body:JSON.stringify(data_arr)
-                }).then(mail_data=>{
-                  console.log(mail_data)
-                }).catch(error_mail=>{
-                  console.log(error_mail)
-                });
-                console.log('Sent mail');
+              if (no_markets == data_arr.length) {
+                return sendMail
+                  .mailit([config.smtp_credentials.send_to], {
+                    subject: `Summry after ${i.all_data.length} tick`,
+                    text: JSON.stringify(data_arr),
+                    body: JSON.stringify(data_arr)
+                  })
+                  .then(mail_data => {
+                    console.log(mail_data);
+                  })
+                  .catch(error_mail => {
+                    console.log(error_mail);
+                  });
+                console.log("Sent mail");
               }
             }
-
           });
         })
         .catch(stat_error => {
