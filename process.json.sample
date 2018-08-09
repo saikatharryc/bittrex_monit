@@ -1,0 +1,24 @@
+{
+  "apps": [
+    {
+      "name": "mainProcess",
+      "watch": true,
+      "script": "./index.js",
+      "ignore_watch": ["node_modules", "logs", ".git"],
+      "error_file": "./logs/mainProcess_err.log",
+      "out_file": "./logs/mainProcess_out.log",
+      "env_production": {
+        "ENV": "prod",
+        "DB_URI":
+          "mongodb://XXXXXX:XXXXX@XXXXXXXXX:XXXX/XXXX",
+        "SMTP_HOST": "smtp.gmail.com",
+        "SMTP_PORT": 465,
+        "SMTP_USER": "XXXXXXX@gmail.com",
+        "SEND_TO":"XXXXX@gmail.com",
+        "SMTP_PASS": "XXXXXX",
+        "MARKET": "https://bittrex.com/api/v1.1/public/getmarkets",
+        "LATEST_TICK": "https://bittrex.com/Api/v2.0/pub/market/GetLatestTick"
+      }
+    }
+  ]
+}
