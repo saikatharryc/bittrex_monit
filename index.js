@@ -182,7 +182,18 @@ cron.schedule("* * * * *", () => {
       // ])
       //check for 5,15,30,60 minutes and send the data as its count from 0
       // so adding [4, 14, 29, 59]
-      Stats.find({ count: { $in: [4, 14, 29, 59],hour:new Date().getHours() } })
+      Stats.find({
+        count: { $in: [4, 14, 29, 59], hour: new Date().getHours() }
+      })
+        .select({
+          marketName: 1,
+          count: 1,
+          close: 1,
+          open: 1,
+          low: 1,
+          high: 1,
+          total_volume: 1
+        })
         .exec()
         .then(stat_data => {
           if (stat_data.length) {
@@ -191,7 +202,7 @@ cron.schedule("* * * * *", () => {
             stat_data.forEach(i => {
               data_arr.push({
                 market: i.marketName,
-                tickValue: i.all_data.length,
+                tickValue: i.count,
                 close: i.close,
                 open: i.open,
                 low: i.low,
@@ -204,7 +215,7 @@ cron.schedule("* * * * *", () => {
                 return sendMail
                   .mailit([config.smtp_credentials.send_to], {
                     subject: `Summry after ${
-                      i.all_data.length
+                      i.count
                     } tick & of ${no_markets} markets`,
                     text: JSON.stringify(data_arr),
                     body: JSON.stringify(data_arr)
