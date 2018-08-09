@@ -180,19 +180,15 @@ cron.schedule("* * * * *", () => {
       //     }
       //   }
       // ])
-      Stats.find({})
+      //check for 5,15,30,60 minutes and send the data as its count from 0
+      // so adding [4, 14, 29, 59]
+      Stats.find({ count: { $in: [4, 14, 29, 59] } })
         .exec()
         .then(stat_data => {
-          console.log(stat_data);
-          const no_markets = stat_data.length;
-          let data_arr = [];
-          stat_data.forEach(i => {
-            if (
-              i.all_data.length == 5 ||
-              i.all_data.length == 15 ||
-              i.all_data.length == 30 ||
-              i.all_data.length == 60
-            ) {
+          if (stat_data.length) {
+            const no_markets = stat_data.length;
+            let data_arr = [];
+            stat_data.forEach(i => {
               data_arr.push({
                 market: i.marketName,
                 tickValue: i.all_data.length,
@@ -204,9 +200,12 @@ cron.schedule("* * * * *", () => {
               });
 
               if (no_markets == data_arr.length) {
+                //send a mail
                 return sendMail
                   .mailit([config.smtp_credentials.send_to], {
-                    subject: `Summry after ${i.all_data.length} tick`,
+                    subject: `Summry after ${
+                      i.all_data.length
+                    } tick & of ${no_markets} markets`,
                     text: JSON.stringify(data_arr),
                     body: JSON.stringify(data_arr)
                   })
@@ -216,10 +215,11 @@ cron.schedule("* * * * *", () => {
                   .catch(error_mail => {
                     console.log(error_mail);
                   });
-                console.log("Sent mail");
               }
-            }
-          });
+            });
+          } else {
+            return;
+          }
         })
         .catch(stat_error => {
           throw stat_error;
