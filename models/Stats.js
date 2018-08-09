@@ -13,6 +13,7 @@ var MinuteSchema = mongoose.Schema(
 );
 var StatSchema = mongoose.Schema({
   hour: Number,
+  expireAt:Date,
   marketName: String,
   open: {
     type: Number,
