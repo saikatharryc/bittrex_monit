@@ -182,7 +182,7 @@ cron.schedule("* * * * *", () => {
       // ])
       //check for 5,15,30,60 minutes and send the data as its count from 0
       // so adding [4, 14, 29, 59]
-      Stats.find({ count: { $in: [4, 14, 29, 59] } })
+      Stats.find({ count: { $in: [4, 14, 29, 59],hour:new Date().getHours() } })
         .exec()
         .then(stat_data => {
           if (stat_data.length) {
