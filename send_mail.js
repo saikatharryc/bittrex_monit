@@ -20,7 +20,7 @@ function mailit(emails, payload) {
       let transporter = nodemailer.createTransport({
         host: appconst.smtp_host,
         port: appconst.port,
-        secure: true, // true for 465, false for other ports
+        secure: false, // true for 465, false for other ports
         auth: {
           user: appconst.user, // generated ethereal user
           pass: appconst.pass // generated ethereal password
@@ -49,12 +49,12 @@ function mailit(emails, payload) {
         //console.log("Message sent: %s", info.messageId);
         // Preview only available when sending through an Ethereal account
         //console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-        // return resolve({
-        //   info: info.messageId,
-        //   preview_url: nodemailer.getTestMessageUrl(info)
-        // });
+        return resolve({
+          info: info.messageId,
+          preview_url: nodemailer.getTestMessageUrl(info)
+        });
       });
-      return resolve();
+      // return resolve();
     });
   });
 }
