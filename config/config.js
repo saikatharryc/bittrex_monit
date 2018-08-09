@@ -14,15 +14,15 @@ const config_schema = Joi.object().keys({
       poolSize: Joi.number().required()
     }
   },
-  smtp_credentials :{
+  smtp_credentials: {
     smtp_host: Joi.string().required(),
-    port:Joi.number().required(),
+    port: Joi.number().required(),
     user: Joi.string().required(),
     pass: Joi.string().required(),
-    send_to:Joi.string().required(),
+    send_to: Joi.string().required(),
     from_data: Joi.string().required()
   },
-  req_uri : {
+  req_uri: {
     market: Joi.string().required(),
     latest_tick: Joi.string().required()
   }
@@ -45,8 +45,8 @@ if (process.env.ENV == "prod") {
     port: envs.SMTP_PORT,
     user: envs.SMTP_USER,
     pass: envs.SMTP_PASS,
-    send_to:envs.SEND_TO,
-    from_data: '"Some*** Administration" <saikat@kiot.io>'
+    send_to: envs.SEND_TO,
+    from_data: '"i came from Saikats assignment" <saikatchakrabortty2@gmail.com@>'
   };
   config.req_uri = {
     market: envs.MARKET,
