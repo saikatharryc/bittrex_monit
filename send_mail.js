@@ -20,7 +20,7 @@ function mailit(emails, payload) {
       let transporter = nodemailer.createTransport({
         host: appconst.smtp_host,
         port: appconst.port,
-        secure: false, // true for 465, false for other ports
+        secure: true, // true for 465, false for other ports
         auth: {
           user: appconst.user, // generated ethereal user
           pass: appconst.pass // generated ethereal password
