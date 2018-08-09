@@ -22,7 +22,7 @@ const config_schema = Joi.object().keys({
     send_to:Joi.string().required(),
     from_data: Joi.string().required()
   },
-  req_uri = {
+  req_uri : {
     market: Joi.string().required(),
     latest_tick: Joi.string().required()
   }
