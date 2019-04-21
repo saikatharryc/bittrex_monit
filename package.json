@@ -9,10 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "joi": "^13.5.2",
+    "joi": "^14.3.1",
     "mongoose": "^5.2.7",
-    "node-cron": "^1.2.1",
-    "nodemailer": "^4.4.2",
+    "node-cron": "^2.0.3",
+    "nodemailer": "^6.1.1",
     "request": "^2.87.0",
     "request-promise": "^4.2.2"
   }
