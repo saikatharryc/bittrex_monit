@@ -1,4 +1,7 @@
 ## Structure
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/saikatharryc/bittrex_monit.svg)](https://greenkeeper.io/)
+
 ```
 .
 |-- config 
